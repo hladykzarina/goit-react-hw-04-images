@@ -27,10 +27,10 @@ export const Searchbar = ({ onFormSubmit }) => {
           placeholder="Search images and photos"
           onChange={inputChange}
         />
+        <button type="submit" className={css.SearchFormButton}>
+          <span className={css.SearchFormButtonLabel}>Search</span>
+        </button>
       </form>
-      <button type="submit" className={css.SearchFormButton}>
-        <span className={css.SearchFormButtonLabel}>Search</span>
-      </button>
     </header>
   );
 };
