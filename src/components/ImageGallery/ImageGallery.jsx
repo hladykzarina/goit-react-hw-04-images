@@ -1,14 +1,25 @@
-import { ImageGalleryItem } from '../ImageGalleryItem/ImageGalleryItem';
+import ImageGalleryItem from '../ImageGalleryItem/ImageGalleryItem';
 import { Gallery } from './ImageGallery.styled';
 
-export const ImageGallery = ({ galleryItems }) => {
+import PropTypes from 'prop-types';
+
+function ImageGallery({ gallery, onOpenPicture }) {
   return (
     <Gallery>
-      {galleryItems.map(galleryItem => {
-        return (
-          <ImageGalleryItem key={galleryItem.id} galleryItem={galleryItem} />
-        );
-      })}
+      {gallery.map(picture => (
+        <ImageGalleryItem
+          key={picture.id}
+          picture={picture}
+          onOpenPicture={onOpenPicture}
+        />
+      ))}
     </Gallery>
   );
+}
+
+ImageGallery.propTypes = {
+  gallery: PropTypes.arrayOf(PropTypes.object),
+  onOpenPicture: PropTypes.func,
 };
+
+export default ImageGallery;
