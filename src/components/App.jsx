@@ -1,97 +1,73 @@
+import { getImages } from '../service/PostsApiService';
 import { useState, useEffect } from 'react';
 
-//import { ToastContainer, toast } from 'react-toastify';
-//import 'react-toastify/dist/ReactToastify.css';
+import { Searchbar } from './Searchbar/Searchbar';
+import { ImageGallery } from './ImageGallery/ImageGallery';
+import { Button } from './Button/Button';
+import { Modal } from './Modal/Modal';
+import { Loader } from './Loader/Loader';
 
-import PostsApiService from 'service/PostsApiService';
-
-import Searchbar from './Searchbar/Searchbar';
-import ImageGallery from './ImageGallery/ImageGallery';
-
-import { Loader } from 'components/Loader/Loader';
-import Modal from './Modal/Modal';
-import { AppContent } from './App.styled';
-
-function App() {
-  const [gallery, setGallery] = useState([]);
-  const [searchQuery, setSearchQuery] = useState('');
+export const App = () => {
+  const [query, setQuery] = useState('');
+  const [images, setImages] = useState([]);
+  const [largeImgUrl, setLargeImgUrl] = useState('');
   const [page, setPage] = useState(1);
-  const [showModal, setShowModal] = useState(false);
-  const [showLoader, setShowLoader] = useState(false);
+  const [showBtn, setShowBtn] = useState(false);
   const [error, setError] = useState(null);
-  const [largeImage, setLargeImage] = useState({});
-  const [total, setTotal] = useState(0);
+  const [isEmpty, setIsEmpty] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  // const [isModalOpen, setIsModalOpen] = useState(false);
 
   useEffect(() => {
-    fetchGallary();
-  }, [searchQuery]);
-
-  const fetchGallary = () => {
-    setShowLoader(true);
-
-    PostsApiService(searchQuery, page)
-      .then(({ hits, total }) => {
-        setGallery(prev => [...prev, ...hits]);
-        setPage(prev => prev + 1);
-        setTotal(total);
-
-        scrollToDown();
-      })
-      .catch(error => setError(error))
-      .finally(() => setShowLoader(false));
-  };
-
-  const scrollToDown = () => {
-    window.scrollTo({
-      top: document.documentElement.scrollHeight,
-      behavior: 'smooth',
-    });
-  };
-
-  const handleFormSubmit = query => {
-    if (query === searchQuery) {
+    if (!query) {
       return;
     }
+    setIsLoading(true);
+    getImages(query, page)
+      .then(({ hits, total, totalHits }) => {
+        if (hits.length === 0) {
+          setIsEmpty(true);
+          return;
+        }
+        setImages(prevState => [...prevState, ...hits]);
+        setShowBtn(page < Math.ceil(totalHits / 12));
+      })
+      .catch(error => setError(error.message))
+      .finally(() => setIsLoading(false));
+  }, [query, page]);
 
-    setSearchQuery(query);
-    setGallery([]);
+  const onFormSubmit = query => {
+    setQuery(query);
+    setImages([]);
+    setLargeImgUrl('');
     setPage(1);
+    setShowBtn(false);
+    setError(null);
+    setIsEmpty(false);
+    setIsLoading(false);
   };
-
-  const toggleModal = () => {
-    setShowModal(prev => !prev);
+  const onBtnClick = () => {
+    setPage(prevState => prevState + 1);
   };
-
-  const handleOpenPicture = largeImage => {
-    setLargeImage(largeImage);
-    toggleModal();
+  const onImageClick = largeImg => {
+    setLargeImgUrl(largeImg);
   };
-
-  const showLoadMore = () => {
-    return Math.ceil(total / 12) !== page - 1;
-  };
-
+  const hasLargeImgUrl = largeImgUrl.length > 0;
   return (
-    <AppContent>
-      <Searchbar onSubmit={handleFormSubmit} />
-
-      {error && <p>{error.message}</p>}
-
-      {gallery.length > 0 && (
-        <ImageGallery gallery={gallery} onOpenPicture={handleOpenPicture} />
+    <>
+      <Searchbar onFormSubmit={onFormSubmit} />
+      {isEmpty && <p>Nothing find for this {query}.</p>}
+      {error && <p>Something wrong! {error}</p>}
+      {isLoading && <Loader />}
+      {images?.length > 0 && (
+        <ImageGallery photos={images} onImageClick={onImageClick} />
       )}
 
-      {gallery.length > 0 && !showLoader && showLoadMore() && (
-        <Loader onLoadMore={fetchGallary} />
-      )}
+      {showBtn && <Button onBtnClick={onBtnClick} />}
 
-      {showModal && (
-        <Modal onClose={toggleModal}>
-          <img src={largeImage.largeImageURL} alt={largeImage.tags} />
-        </Modal>
+      {hasLargeImgUrl && (
+        <Modal largeImgUrl={largeImgUrl} onImageClick={onImageClick} />
       )}
-    </AppContent>
+    </>
   );
-}
-
-export default App;
+};

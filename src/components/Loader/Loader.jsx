@@ -1,15 +1,10 @@
-import { Vortex } from 'react-loader-spinner';
+import SyncLoader from 'react-spinners/SyncLoader';
+import css from './Loader.module.css';
 
 export const Loader = () => {
   return (
-    <Vortex
-      visible={true}
-      height="80"
-      width="80"
-      ariaLabel="vortex-loading"
-      wrapperStyle={{}}
-      wrapperClass="vortex-wrapper"
-      colors={['red', 'green', 'blue', 'yellow', 'orange', 'purple']}
-    />
+    <div className={css.Overlay}>
+      <SyncLoader color="#3f51b5" size={30} aria-label="Loading Spinner" />;
+    </div>
   );
 };

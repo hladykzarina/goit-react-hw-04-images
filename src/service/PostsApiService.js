@@ -1,11 +1,17 @@
 import axios from 'axios';
 
-const PostsApiService = (searchQuery, page) => {
-  const URL = 'https://pixabay.com/api/';
-  const KEY = '39231983-3a5a24849d135b109e286581a';
-  return axios
-    .get(`${URL}?key=${KEY}&per_page=12&page=${page}&q=${searchQuery}`)
-    .then(res => res.data);
-};
+export const getImages = async (query, page) => {
+  const { data } = await axios.get('https://pixabay.com/api/', {
+    params: {
+      key: '39231983-3a5a24849d135b109e286581a',
+      q: query,
+      page: page,
+      per_page: 12,
+      image_type: 'photo',
+      orientation: 'horizontal',
+      safesearch: true,
+    },
+  });
 
-export default PostsApiService;
+  return data;
+};

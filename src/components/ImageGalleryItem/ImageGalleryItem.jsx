@@ -1,22 +1,26 @@
-import { GalleryItem, GalleryImg } from './ImageGalleryItem.styled';
-
 import PropTypes from 'prop-types';
 
-function ImageGalleryItem({ picture, onOpenPicture }) {
-  return (
-    <GalleryItem
-      onClick={() => {
-        onOpenPicture(picture);
-      }}
-    >
-      <GalleryImg src={picture.webformatURL} alt={picture.tags} />
-    </GalleryItem>
-  );
-}
+import css from './ImageGalleryItem.module.css';
 
-ImageGalleryItem.propTypes = {
-  picture: PropTypes.object,
-  onOpenPicture: PropTypes.func,
+export const ImageGalleryItem = ({
+  webformatURL,
+  largeImageURL,
+  onImageClick,
+}) => {
+  return (
+    <li className={css.ImageGalleryItem}>
+      <img
+        src={webformatURL}
+        alt="your query"
+        className={css.ImageGalleryItemImage}
+        onClick={() => onImageClick(largeImageURL)}
+      />
+    </li>
+  );
 };
 
-export default ImageGalleryItem;
+ImageGalleryItem.propTypes = {
+  webformatURL: PropTypes.string,
+  largeImageURL: PropTypes.string,
+  onImageClick: PropTypes.func,
+};

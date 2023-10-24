@@ -1,25 +1,26 @@
-import ImageGalleryItem from '../ImageGalleryItem/ImageGalleryItem';
-import { Gallery } from './ImageGallery.styled';
-
 import PropTypes from 'prop-types';
 
-function ImageGallery({ gallery, onOpenPicture }) {
-  return (
-    <Gallery>
-      {gallery.map(picture => (
-        <ImageGalleryItem
-          key={picture.id}
-          picture={picture}
-          onOpenPicture={onOpenPicture}
-        />
-      ))}
-    </Gallery>
-  );
-}
+import css from './ImageGallery.module.css';
+import { ImageGalleryItem } from 'components/ImageGalleryItem/ImageGalleryItem';
 
-ImageGallery.propTypes = {
-  gallery: PropTypes.arrayOf(PropTypes.object),
-  onOpenPicture: PropTypes.func,
+export const ImageGallery = ({ photos, onImageClick }) => {
+  return (
+    <ul className={css.ImageGallery}>
+      {photos.map(({ id, webformatURL, largeImageURL }) => {
+        return (
+          <ImageGalleryItem
+            key={id}
+            webformatURL={webformatURL}
+            largeImageURL={largeImageURL}
+            onImageClick={onImageClick}
+          />
+        );
+      })}
+    </ul>
+  );
 };
 
-export default ImageGallery;
+ImageGallery.propTypes = {
+  photos: PropTypes.arrayOf(PropTypes.object),
+  onImageClick: PropTypes.func,
+};
